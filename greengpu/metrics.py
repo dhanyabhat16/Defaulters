@@ -21,6 +21,7 @@ class InferenceMetrics:
     throughput: float              # samples/sec
     gpu_memory_used: float         # MB
     gpu_utilization: float         # %
+    cpu_utilization: Optional[float] = None  # %
     gpu_power: Optional[float] = None   # Watts
     power_efficiency: Optional[float] = None  # samples per watt
 
@@ -70,6 +71,7 @@ class MetricsCollector:
         throughputs = [m.throughput for m in self.metrics_history]
         memory_used = [m.gpu_memory_used for m in self.metrics_history]
         utilizations = [m.gpu_utilization for m in self.metrics_history]
+        cpu_utils = [m.cpu_utilization for m in self.metrics_history if m.cpu_utilization is not None]
         powers = [m.gpu_power for m in self.metrics_history if m.gpu_power]
 
         stats = {
@@ -96,6 +98,13 @@ class MetricsCollector:
                 "mean": statistics.mean(utilizations),
             },
         }
+
+        if cpu_utils:
+            stats["cpu_utilization"] = {
+                "min": min(cpu_utils),
+                "max": max(cpu_utils),
+                "mean": statistics.mean(cpu_utils),
+            }
 
         if powers:
             stats["gpu_power"] = {

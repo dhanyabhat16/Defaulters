@@ -55,6 +55,12 @@ class ModelLoader:
         
         print(f"Model loaded on {self.device}")
         return model
+
+    def set_device(self, device: str):
+        """Move the loaded model to a new device."""
+        self.device = device
+        if self.model is not None:
+            self.model = self.model.to(self.device)
     
     def load_from_checkpoint(self, checkpoint_path: str) -> torch.nn.Module:
         """
